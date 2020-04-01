@@ -25,6 +25,7 @@ bridge = CvBridge()
 cv_image = None
 media = []
 centro = []
+maior_area = 0
 atraso = 1.5E9 # 1 segundo e meio. Em nanossegundos
 
 area = 0.0 # Variavel com a area do maior contorno
@@ -47,7 +48,7 @@ def roda_todo_frame(imagem):
 	global cv_image
 	global media
 	global centro
-
+	global maior_area
 	now = rospy.get_rostime()
 	imgtime = imagem.header.stamp
 	lag = now-imgtime # calcula o lag
@@ -110,28 +111,37 @@ if __name__=="__main__":
 				print("Média dos vermelhos: {0}, {1}".format(media[0], media[1]))
 				print("Centro dos vermelhos: {0}, {1}".format(centro[0], centro[1]))
 
-				if (media[0] > centro[0]):
-					vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.2))
-				if (media[0] < centro[0]):
-					vel = Twist(Vector3(0,0,0), Vector3(0,0,0.2))
+				vel = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0.2))
+				#velocidade_saida.publish(velocidade)
+				rospy.sleep(0.5)
+				print('girou')
+				#print (maior_area)
+				if maior_area > 50:
+					if (media[0] > centro[0]+30):
+						vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.1))
+						print('focou')
+					elif (media[0] < centro[0]-30):
+						vel = Twist(Vector3(0,0,0), Vector3(0,0,0.1))
+						print("focou tbm")
+					else:
+						vel = Twist(Vector3(0.08, 0, 0), Vector3(0, 0, 0))
+					#velocidade_saida.publish(velocidade)
+					#rospy.sleep(2.0)
+					#print("varou")
 
-				velocidade = Twist(Vector3(0.08, 0, 0), Vector3(0, 0, 0))
-				velocidade_saida.publish(velocidade)
-				#rospy.sleep(2.0)
-
-				x=len(listax)-1
-				print(x)	
-				
+					x=len(listax)-1
+					print(listax[x])	
 					
-				if listax[x] <= 0.55:
-					print ("entrou")
-					velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
-					velocidade_saida.publish(velocidade)
-					#rospy.sleep(10.0)
-					# break
-				
+						
+					if listax[x] <= 0.38:
+						print ("entrou")
+						vel = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
+						#velocidade_saida.publish(velocidade)
+						#rospy.sleep(10.0)
+						#break
+
 			velocidade_saida.publish(vel)
-			rospy.sleep(0.1)
+			rospy.sleep(0.5)
 
 			# velocidade = Twist(Vector3(0.16, 0, 0), Vector3(0, 0, 0))
 			# velocidade_saida.publish(velocidade)

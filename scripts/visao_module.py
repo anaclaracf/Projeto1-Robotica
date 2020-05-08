@@ -16,8 +16,8 @@ from sensor_msgs.msg import Image, CompressedImage
 from cv_bridge import CvBridge, CvBridgeError
 import mobilenet_simples as mnet
 
+debug_frame = None
  
-
 def processa(frame):
     '''Use esta funcao para basear o processamento do seu robo'''
 
@@ -27,8 +27,8 @@ def processa(frame):
 
 
     def cross(img_rgb, point, color, width,length):
-        cv2.line(img_rgb, (point[0] - int(length/2), point[1]),  (point[0] + int(length/2), point[1]), color ,width, length)
-        cv2.line(img_rgb, (point[0], point[1] - int(length/2)), (point[0], point[1] + int(length/2)),color ,width, length)
+        cv2.line(img_rgb, (point[0] - int(length//2), point[1]),  (point[0] + int(length//2), point[1]), color ,width, length)
+        cv2.line(img_rgb, (point[0], point[1] - int(length//2)), (point[0], point[1] + int(length//2)),color ,width, length)
 
     cross(result_frame, centro, [255,0,0], 1, 17)
 
@@ -50,11 +50,14 @@ def identifica_cor(frame):
     # vermelho puro (H=0) estão entre H=-8 e H=8.
     # Precisamos dividir o inRange em duas partes para fazer a det ecção
     # do vermelho:
+
+    global debug_frame
+
     frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    rosa1 = np.array([145,  50,  50])
-    rosa2 = np.array([155, 255, 255])
-    segmentado_cor = cv2.inRange(frame_hsv, rosa1, rosa2)
+    azul1 = np.array([94,  50,  50])
+    azul2 = np.array([104, 255, 255])
+    segmentado_cor = cv2.inRange(frame_hsv, azul1, azul2)
 
 
     # Note que a notacão do numpy encara as imagens como matriz, portanto o enderecamento é
@@ -64,8 +67,8 @@ def identifica_cor(frame):
 
 
     def cross(img_rgb, point, color, width,length):
-        cv2.line(img_rgb, (point[0] - length/2, point[1]),  (point[0] + length/2, point[1]), color ,width, length)
-        cv2.line(img_rgb, (point[0], point[1] - length/2), (point[0], point[1] + length/2),color ,width, length)
+        cv2.line(img_rgb, (point[0] - length//2, point[1]),  (point[0] + length//2, point[1]), color ,width, length)
+        cv2.line(img_rgb, (point[0], point[1] - length//2), (point[0], point[1] + length//2),color ,width, length)
 
 
 
@@ -102,9 +105,12 @@ def identifica_cor(frame):
     cv2.putText(frame,"{:d} {:d}".format(*media),(20,100), 1, 4,(255,255,255),2,cv2.LINE_AA)
     cv2.putText(frame,"{:0.1f}".format(maior_contorno_area),(20,50), 1, 4,(255,255,255),2,cv2.LINE_AA)
 
+    
+
     # cv2.imshow('video', frame)
     # cv2.imshow('seg', segmentado_cor)
     # cv2.waitKey(1)
+    debug_frame = frame.copy()
 
     return maior_contorno_area
 

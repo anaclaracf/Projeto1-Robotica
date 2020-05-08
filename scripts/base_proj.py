@@ -43,7 +43,7 @@ check_delay = False
 
 resultados = [] # Criacao de uma variavel global para guardar os resultados vistos
 cx=0
-rx=None
+bx=None
 x = 0
 y = 0
 z = 0 
@@ -58,6 +58,8 @@ tf_buffer = tf2_ros.Buffer()
 
 
 def recebe(msg):
+    # Para forçar maior atualização dos sistemas de coordenadas 
+    # roslaunch turtlebot3_gazebo turtlebot3_gazebo_rviz.launch
 	global x # O global impede a recriacao de uma variavel local, para podermos usar o x global ja'  declarado
 	global y
 	global z
@@ -93,7 +95,7 @@ def recebe(msg):
 		angulo_marcador_robo = math.degrees(math.acos(cosa))
 
 		# Terminamos
-		print("id: {} x {} y {} z {} angulo {} ".format(id, x,y,z, angulo_marcador_robo))
+		# print("id: {} x {} y {} z {} angulo {} ".format(id, x,y,z, angulo_marcador_robo))
 
 
 
@@ -137,18 +139,7 @@ def roda_todo_frame(imagem):
     except CvBridgeError as e:
         print('ex', e)
 
-# def auto_canny(image, sigma=0.33): #SEGUIR AS LINHAS DO HOUGH LINES
-#     # compute the median of the single channel pixel intensities
-#     v = np.median(image)
- 
-#     # apply automatic Canny edge detection using the computed median
-#     lower = int(max(0, (1.0 - sigma) * v))
-#     upper = int(min(255, (1.0 + sigma) * v))
-#     edged = cv2.Canny(image, lower, upper)
 
-#     # return the edged image
-#     return edged
-    
 
 if __name__=="__main__":
     rospy.init_node("base_proj")
@@ -170,7 +161,7 @@ if __name__=="__main__":
     # [('chair', 86.965459585189819, (90, 141), (177, 265))]
 
     try:
-        # Inicializando - por default gira no sentido anti-horário
+        # IniciTypeError: alizando - por default gira no sentido anti-horário
         # vel = Twist(Vector3(0,0,0), Vector3(0,0,math.pi/10.0))
         
         # lista_velx=[]
@@ -185,27 +176,37 @@ if __name__=="__main__":
                 # cv2.waitKey(1)
                 # rospy.sleep(0.1)
             if cv_image is not None:
-                img_rgb = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+                
+                img_rgb1 = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
                 hsv = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
-                amarelo1 = numpy.array([ 20,  50,  50])
+                amarelo1 = numpy.array([20,  50,  50])
                 amarelo2 = numpy.array([30, 255, 255])
                 mask = cv2.inRange(hsv, amarelo1, amarelo2)
 
                 img_rgb2 = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
                 hsv2 = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
-                rosa1 = numpy.array([145,  50,  50])
-                rosa2 = numpy.array([155, 255, 255])
-                mask_rosa = cv2.inRange(hsv2, rosa1, rosa2) 
+                azul1 = numpy.array([94,  50,  50])
+                azul2 = numpy.array([104, 255, 255])
+                mask_azul = cv2.inRange(hsv2, azul1, azul2) 
 
-                Mr = cv2.moments(mask_rosa)
+                Mr = cv2.moments(mask_azul)
                 if Mr['m00'] > 0:
-                    rx = int(Mr['m10']/Mr['m00'])
-                    ry = int(Mr['m01']/Mr['m00'])
-                    print("RX",rx)
+                    bx = int(Mr['m10']/Mr['m00'])
+                    by = int(Mr['m01']/Mr['m00'])
+                    # print("RX",rx)
                     # lista_velx.append(cx)
-                    print(centro)
-                    cv2.circle(cv_image, (rx, ry), 20, (255,0,0), -1)
+                    # print(centro)
+                    cv2.circle(cv_image, (bx, by), 20, (255,0,0), -1)
 
+
+                M = cv2.moments(mask)
+                if M['m00'] > 0:
+                    cx = int(M['m10']/M['m00'])
+                    cy = int(M['m01']/M['m00'])
+                    #print('Cx', cx)
+                    # lista_velx.append(cx)
+                    # print(centro)
+                    cv2.circle(cv_image, (cx, cy), 20, (0,0,255), -1)
 
                 h, w, d = cv_image.shape
                 search_top = int(3*h/4)
@@ -213,47 +214,56 @@ if __name__=="__main__":
                 mask[0:search_top, 0:w] = 0
                 mask[search_bot:h, 0:w] = 0
 
-                M = cv2.moments(mask)
-                if M['m00'] > 0:
-                    cx = int(M['m10']/M['m00'])
-                    cy = int(M['m01']/M['m00'])
-                    print(cx,cy)
-                    # lista_velx.append(cx)
-                    print(centro)
-                    cv2.circle(cv_image, (cx, cy), 20, (0,0,255), -1)
-
                 cv2.imshow("Robot Cam", cv_image)
-                cv2.imshow("Cam rosa", mask_rosa)
+                # cv2.imshow("Cam rosa", mask_azul)
                 cv2.imshow("Cam amarela", mask)
+                if visao_module.debug_frame is not None:
+                    cv2.imshow("Debug Frame", visao_module.debug_frame)
                 print("AREA", maior_area)
-                print("maior area")
-                cv2.waitKey(3)
+                # print("maior area")
+            
+                cv2.waitKey(4)
                 # print("AQUI", centro[0], cx)
-                vel = Twist(Vector3(0.1, 0, 0), Vector3(0, 0, 0))
+                vel = Twist(Vector3(0.07, 0, 0), Vector3(0, 0, 0))
+                # print("super rapido")
                 velocidade_saida.publish(vel)
                 rospy.sleep(0.1)
-
-                if centro is not None:
-                    if rx is None or maior_area < 20: 
+                # dist= rx-cx
+                # print (centro[0])
+                if centro is not None :
+                    if maior_area == None or maior_area < 10000:
                         if (centro[0] < cx):
                             vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.1))
+                            # vel = Twist(Vector3(0.05, 0, 0), Vector3(0, 0, 0))
                             print('focou amarelo')
                         else:
                             vel = Twist(Vector3(0,0,0), Vector3(0,0,0.1))
-                            print("focou tbm amarelo")
-                    else:
-                        if (centro[0] < rx):
+                            # vel = Twist(Vector3(0.05, 0, 0), Vector3(0, 0, 0))
+                            print('focou amarelo')
+                        
+                    elif maior_area >= 10000 and maior_area < 60000:
+                        print("entrou area")
+                        if (centro[0] < bx):
                             vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.1))
-                            print('focou rosa')
+                            # vel = Twist(Vector3(0.05, 0, 0), Vector3(0, 0, 0))
+                            print('focou azul')
                         else:
                             vel = Twist(Vector3(0,0,0), Vector3(0,0,0.1))
-                            print("focou tbm rosa")
-
+                            # vel = Twist(Vector3(0.05, 0, 0), Vector3(0, 0, 0))
+                            print("focou azul")
+                    elif maior_area >= 60000:
+                        vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+                        vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.5))
+                        velocidade_saida.publish(vel)
+                        rospy.sleep(2.5)
+                        
+                        print('focou azul e PAROU')
+                        
 
                     
                     velocidade_saida.publish(vel)
                     rospy.sleep(0.1)
-           
+            
 
     except rospy.ROSInterruptException:
         print("Ocorreu uma exceção com o rospy")

@@ -49,7 +49,7 @@ def roda_todo_frame(imagem):
 	global media
 	global centro
 	global maior_area
-	
+
 	now = rospy.get_rostime()
 	imgtime = imagem.header.stamp
 	lag = now-imgtime # calcula o lag

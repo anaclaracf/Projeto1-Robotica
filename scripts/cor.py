@@ -10,16 +10,16 @@ __author__ = ["Rachel P. B. Moraes", "Igor Montagner", "Fabio Miranda"]
 import rospy
 import numpy as np
 import tf
-import math
+import math 
 import cv2
 import time
 from geometry_msgs.msg import Twist, Vector3, Pose
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Image, CompressedImage, LaserScan
 from cv_bridge import CvBridge, CvBridgeError
-import cormodule
+import cormodule 
 
-
+ 
 bridge = CvBridge()
 
 cv_image = None
@@ -31,7 +31,7 @@ atraso = 1.5E9 # 1 segundo e meio. Em nanossegundos
 area = 0.0 # Variavel com a area do maior contorno
 
 # Só usar se os relógios ROS da Raspberry e do Linux desktop estiverem sincronizados. 
-# Descarta imagens que chegam atrasadas demais
+# Descarta imag ens que chegam atrasadas demais
 check_delay = False 
 
 # A função a seguir é chamada sempre que chega um novo frame
@@ -49,6 +49,7 @@ def roda_todo_frame(imagem):
 	global media
 	global centro
 	global maior_area
+	
 	now = rospy.get_rostime()
 	imgtime = imagem.header.stamp
 	lag = now-imgtime # calcula o lag

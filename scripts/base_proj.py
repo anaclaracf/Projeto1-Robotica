@@ -3,7 +3,7 @@
 
 from __future__ import print_function, division
 import rospy
-import numpy as np
+import numpy as np 
 import numpy 
 import tf
 import math
@@ -26,12 +26,13 @@ import visao_module
 
 
 bridge = CvBridge()
-
+bx=0
 cv_image = None
 imagem = None
 media = []
 centro = None
 maior_area=0
+reconheceu=False
 atraso = 1.5E9 # 1 segundo e meio. Em nanossegundos
 
 
@@ -55,6 +56,8 @@ frame = "camera_link"
 tfl = 0
 
 tf_buffer = tf2_ros.Buffer()
+
+# corr=str(input("Qual cor (pink, red, green)?"))
 
 
 def recebe(msg):
@@ -106,6 +109,11 @@ def roda_todo_frame(imagem):
     global centro
     global maior_area
     global resultados
+    global pink
+    global red 
+    global green
+    global bx
+    global reconheceu
     # global imagem
     
     now = rospy.get_rostime()
@@ -121,8 +129,15 @@ def roda_todo_frame(imagem):
         cv_image = bridge.compressed_imgmsg_to_cv2(imagem, "bgr8")
         # Note que os resultados já são guardados automaticamente na variável
         # chamada resultados
-        centro, imagem, resultados =  visao_module.processa(cv_image) 
-        maior_area = visao_module.identifica_cor(cv_image)
+        green="green"
+        red="red"
+        pink = "pink"
+        bicycle= "bicycle"
+        dog = "dog"
+        cat = "cat"
+        bird = "bird"
+        centro, imagem, resultados, reconheceu =  visao_module.processa(cv_image,bicycle) 
+        maior_area,bx = visao_module.identifica_cor(cv_image,red)
 
         #qualquer, centro, maior_area, media =  visao_module.identifica_cor(cv_image)
 
@@ -183,20 +198,14 @@ if __name__=="__main__":
                 amarelo2 = numpy.array([30, 255, 255])
                 mask = cv2.inRange(hsv, amarelo1, amarelo2)
 
-                img_rgb2 = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-                hsv2 = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
-                azul1 = numpy.array([94,  50,  50])
-                azul2 = numpy.array([104, 255, 255])
-                mask_azul = cv2.inRange(hsv2, azul1, azul2) 
-
-                Mr = cv2.moments(mask_azul)
-                if Mr['m00'] > 0:
-                    bx = int(Mr['m10']/Mr['m00'])
-                    by = int(Mr['m01']/Mr['m00'])
-                    # print("RX",rx)
-                    # lista_velx.append(cx)
-                    # print(centro)
-                    cv2.circle(cv_image, (bx, by), 20, (255,0,0), -1)
+                # Mr = cv2.moments(mask_azul)
+                # if Mr['m00'] > 0:
+                #     bx = int(Mr['m10']/Mr['m00'])
+                #     by = int(Mr['m01']/Mr['m00'])
+                #     # print("RX",rx)
+                #     # lista_velx.append(cx)
+                #     # print(centro)
+                #     cv2.circle(cv_image, (bx, by), 20, (255,0,0), -1)
 
 
                 M = cv2.moments(mask)
@@ -231,36 +240,40 @@ if __name__=="__main__":
                 # dist= rx-cx
                 # print (centro[0])
                 if centro is not None :
-                    if maior_area == None or maior_area < 10000:
+                    if maior_area == None or maior_area < 7000:
                         if (centro[0] < cx):
                             vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.1))
                             # vel = Twist(Vector3(0.05, 0, 0), Vector3(0, 0, 0))
                             print('focou amarelo')
-                        else:
+                        elif (centro[0]>cx):
                             vel = Twist(Vector3(0,0,0), Vector3(0,0,0.1))
                             # vel = Twist(Vector3(0.05, 0, 0), Vector3(0, 0, 0))
                             print('focou amarelo')
                         
-                    elif maior_area >= 10000 and maior_area < 60000:
+                    elif maior_area >= 7000 and maior_area < 67000:
                         print("entrou area")
                         if (centro[0] < bx):
                             vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.1))
                             # vel = Twist(Vector3(0.05, 0, 0), Vector3(0, 0, 0))
-                            print('focou azul')
-                        else:
+                            print('focou creeper')
+                        elif (centro[0] > bx):
                             vel = Twist(Vector3(0,0,0), Vector3(0,0,0.1))
                             # vel = Twist(Vector3(0.05, 0, 0), Vector3(0, 0, 0))
-                            print("focou azul")
-                    elif maior_area >= 60000:
+                            print("focou creeper")
+                    elif maior_area >= 67000:
                         vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
-                        vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.5))
                         velocidade_saida.publish(vel)
-                        rospy.sleep(2.5)
+                        raw_input("enter")
+                        var=9
+                        vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.5))
+                        rospy.sleep(1.5)
                         
-                        print('focou azul e PAROU')
-                        
+                        print('focou creeper e PAROU')
+                    if reconheceu:
+                        vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+                        velocidade_saida.publish(vel)
+                        raw_input()  
 
-                    
                     velocidade_saida.publish(vel)
                     rospy.sleep(0.1)
             

@@ -18,7 +18,7 @@ from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Image, CompressedImage, LaserScan
 from cv_bridge import CvBridge, CvBridgeError
 import cormodule 
-
+ 
  
 bridge = CvBridge()
 
@@ -41,7 +41,7 @@ listax=[]
 def scaneou(dado):
 	x=np.array(dado.ranges).round(decimals=2)
 	listax.append(x[0])
-	return listax
+	return listax 
 
 def roda_todo_frame(imagem):
 	print("frame")

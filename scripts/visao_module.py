@@ -17,13 +17,17 @@ from cv_bridge import CvBridge, CvBridgeError
 import mobilenet_simples as mnet
 
 debug_frame = None
- 
-def processa(frame):
+  
+def processa(frame,name):
     '''Use esta funcao para basear o processamento do seu robo'''
 
     result_frame, result_tuples = mnet.detect(frame)
 
     centro = (frame.shape[1]//2, frame.shape[0]//2)
+
+    if result_tuples[0]==name and result_tuples>= 97.0: 
+        reconheceu=True
+
 
 
     def cross(img_rgb, point, color, width,length):
@@ -31,17 +35,16 @@ def processa(frame):
         cv2.line(img_rgb, (point[0], point[1] - int(length//2)), (point[0], point[1] + int(length//2)),color ,width, length)
 
     cross(result_frame, centro, [255,0,0], 1, 17)
-
-
+    
     # cv2.imshow('video', result_frame)
     # cv2.waitKey(1)
 
+    
+    return centro, result_frame, result_tuples, reconheceu
 
-    return centro, result_frame, result_tuples
 
 
-
-def identifica_cor(frame):
+def identifica_cor(frame,cor):
     '''
     Segmenta o maior objeto cuja cor é parecida com cor_h (HUE da cor, no espaço HSV).
     '''
@@ -52,12 +55,29 @@ def identifica_cor(frame):
     # do vermelho:
 
     global debug_frame
-
+    
     frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    azul1 = np.array([94,  50,  50])
-    azul2 = np.array([104, 255, 255])
-    segmentado_cor = cv2.inRange(frame_hsv, azul1, azul2)
+    if cor == "red":
+        hsv1 = np.array([94,  50,  50])
+        hsv2 = np.array([104, 255, 255])
+
+    elif cor == "pink":
+        hsv1 = np.array([145,  50,  50])
+        hsv2 = np.array([155, 255, 255])
+          
+    else:
+        hsv1 = np.array([52, 50, 50])
+        hsv2 = np.array([ 62, 255, 255])
+        
+    segmentado_cor = cv2.inRange(frame_hsv, hsv1, hsv2)
+    
+    Mr = cv2.moments(segmentado_cor)
+    if Mr['m00'] > 0:
+        bx = int(Mr['m10']/Mr['m00'])
+        by = int(Mr['m01']/Mr['m00'])
+        cv2.circle(frame, (bx, by), 20, (255,0,0), -1)
+
 
 
     # Note que a notacão do numpy encara as imagens como matriz, portanto o enderecamento é
@@ -112,5 +132,5 @@ def identifica_cor(frame):
     # cv2.waitKey(1)
     debug_frame = frame.copy()
 
-    return maior_contorno_area
+    return maior_contorno_area, bx
 

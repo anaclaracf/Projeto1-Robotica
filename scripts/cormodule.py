@@ -20,7 +20,7 @@ def identifica_cor(frame):
     '''
     Segmenta o maior objeto cuja cor é parecida com cor_h (HUE da cor, no espaço HSV).
     '''
-
+ 
     # No OpenCV, o canal H vai de 0 até 179, logo cores similares ao 
     # vermelho puro (H=0) estão entre H=-8 e H=8. 
     # Precisamos dividir o inRange em duas partes para fazer a detecção 
@@ -28,7 +28,7 @@ def identifica_cor(frame):
     # frame = cv2.flip(frame, -1) # flip 0: eixo x, 1: eixo y, -1: 2 eixos
     frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-
+ 
  
     cor_menor = np.array([94, 50, 50])
     cor_maior = np.array([104, 255, 255])

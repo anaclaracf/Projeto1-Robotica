@@ -15,7 +15,7 @@ from cv_bridge import CvBridge, CvBridgeError
 import smach
 import smach_ros
 
-
+ 
 def identifica_cor(frame):
     '''
     Segmenta o maior objeto cuja cor é parecida com cor_h (HUE da cor, no espaço HSV).

@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # -*- coding:utf-8 -*-
-
+ 
 from __future__ import print_function, division
 import rospy
 import numpy as np 
@@ -20,7 +20,7 @@ from geometry_msgs.msg import Twist, Vector3, Pose, Vector3Stamped
 from ar_track_alvar_msgs.msg import AlvarMarker, AlvarMarkers
 from nav_msgs.msg import Odometry
 from std_msgs.msg import Header
-
+ 
  
 import visao_module
 
@@ -181,7 +181,9 @@ if __name__=="__main__":
         # vel = Twist(Vector3(0,0,0), Vector3(0,0,math.pi/10.0))
         
         # lista_velx=[]
+        
         while not rospy.is_shutdown():
+            reconheceu2=reconheceu
             for r in resultados:
                 print(r)
             #velocidade_saida.publish(vel)
@@ -239,7 +241,7 @@ if __name__=="__main__":
                 velocidade_saida.publish(vel)
                 rospy.sleep(0.1)
                 # dist= rx-cx
-                # print (centro[0])
+                # print (centro[0]) 
                 if centro is not None :
                     if maior_area == None or maior_area < 7000:
                         if (centro[0] < cx):
@@ -251,7 +253,7 @@ if __name__=="__main__":
                             # vel = Twist(Vector3(0.05, 0, 0), Vector3(0, 0, 0))
                             print('focou amarelo')
                         
-                    elif maior_area >= 7000 and maior_area < 67000:
+                    elif maior_area >= 7000 and maior_area < 130000:
                         print("entrou area")
                         if (centro[0] < bx):
                             vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.1))
@@ -261,22 +263,23 @@ if __name__=="__main__":
                             vel = Twist(Vector3(0,0,0), Vector3(0,0,0.1))
                             # vel = Twist(Vector3(0.05, 0, 0), Vector3(0, 0, 0))
                             print("focou creeper")
-                    elif maior_area >= 67000:
+                    elif maior_area >= 130000:
                         vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+                        # raw_input("enter")
+                        # pegou_creeper=True
+                        vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.8))
                         velocidade_saida.publish(vel)
-                        raw_input("enter")
-                        pegou_creeper=True
-                        vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.5))
                         rospy.sleep(1.5)
                         
                         print('focou creeper e PAROU')
-                    print(reconheceu)
-                    if reconheceu and pegou_creeper:
-                        print (pegou_creeper)
-                        print ("entrou no if da base")
-                        vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
-                        velocidade_saida.publish(vel)
-                        raw_input("enter")  
+                    # print(reconheceu2)
+                    # print (pegou_creeper)
+                    # if reconheceu2 and pegou_creeper:
+                    #     print (pegou_creeper)
+                    #     print ("Reconheceu a base")
+                    #     vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+                    #     velocidade_saida.publish(vel)
+                    #     raw_input("enter")  
 
                     velocidade_saida.publish(vel)
                     rospy.sleep(0.1)

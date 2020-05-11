@@ -19,7 +19,7 @@ from sensor_msgs.msg import Image, CompressedImage, LaserScan
 from cv_bridge import CvBridge, CvBridgeError
 import cormodule 
  
- 
+  
 bridge = CvBridge()
 
 cv_image = None

@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 
 from __future__ import division, print_function
-
+  
 
 import rospy
 import numpy as np
@@ -27,10 +27,10 @@ def processa(frame,name):
 
     reconheceu=False
     if len(result_tuples)>0:
-        if result_tuples[0]==name and result_tuples[1]>= 80.0: 
+        if result_tuples[0][0]==name and result_tuples[0][1]>= 80.0: 
             reconheceu=True
 
-
+ 
 
     def cross(img_rgb, point, color, width,length):
         cv2.line(img_rgb, (point[0] - int(length//2), point[1]),  (point[0] + int(length//2), point[1]), color ,width, length)
@@ -57,7 +57,8 @@ def identifica_cor(frame,cor):
     # do vermelho:
 
     global debug_frame
-    
+    bx=0
+    by=0
     
     frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 

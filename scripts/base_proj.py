@@ -33,6 +33,7 @@ media = []
 centro = None
 maior_area=0
 reconheceu=False
+pegou_creeper=False
 atraso = 1.5E9 # 1 segundo e meio. Em nanossegundos
 
 
@@ -225,7 +226,7 @@ if __name__=="__main__":
 
                 cv2.imshow("Robot Cam", cv_image)
                 # cv2.imshow("Cam rosa", mask_azul)
-                cv2.imshow("Cam amarela", mask)
+                # cv2.imshow("Cam amarela", mask)
                 if visao_module.debug_frame is not None:
                     cv2.imshow("Debug Frame", visao_module.debug_frame)
                 print("AREA", maior_area)
@@ -264,15 +265,18 @@ if __name__=="__main__":
                         vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
                         velocidade_saida.publish(vel)
                         raw_input("enter")
-                        var=9
+                        pegou_creeper=True
                         vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.5))
                         rospy.sleep(1.5)
                         
                         print('focou creeper e PAROU')
-                    if reconheceu:
+                    print(reconheceu)
+                    if reconheceu and pegou_creeper:
+                        print (pegou_creeper)
+                        print ("entrou no if da base")
                         vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
                         velocidade_saida.publish(vel)
-                        raw_input()  
+                        raw_input("enter")  
 
                     velocidade_saida.publish(vel)
                     rospy.sleep(0.1)

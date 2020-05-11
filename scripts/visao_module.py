@@ -19,14 +19,16 @@ import mobilenet_simples as mnet
 debug_frame = None
   
 def processa(frame,name):
-    '''Use esta funcao para basear o processamento do seu robo'''
+    '''Use esta funcao para basea   r o processamento do seu robo'''
 
     result_frame, result_tuples = mnet.detect(frame)
 
     centro = (frame.shape[1]//2, frame.shape[0]//2)
 
-    if result_tuples[0]==name and result_tuples>= 97.0: 
-        reconheceu=True
+    reconheceu=False
+    if len(result_tuples)>0:
+        if result_tuples[0]==name and result_tuples[1]>= 80.0: 
+            reconheceu=True
 
 
 
@@ -55,6 +57,7 @@ def identifica_cor(frame,cor):
     # do vermelho:
 
     global debug_frame
+    
     
     frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 

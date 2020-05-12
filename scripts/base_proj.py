@@ -137,7 +137,7 @@ def roda_todo_frame(imagem):
         dog = "dog"
         cat = "cat"
         bird = "bird"
-        centro, imagem, resultados, reconheceu =  visao_module.processa(cv_image,bicycle) 
+        centro, imagem, resultados, reconheceu =  visao_module.processa(cv_image,cat )
         maior_area,bx = visao_module.identifica_cor(cv_image,red)
 
         #qualquer, centro, maior_area, media =  visao_module.identifica_cor(cv_image)
@@ -209,7 +209,7 @@ if __name__=="__main__":
                 #     # lista_velx.append(cx)
                 #     # print(centro)
                 #     cv2.circle(cv_image, (bx, by), 20, (255,0,0), -1)
-
+ 
 
                 M = cv2.moments(mask)
                 if M['m00'] > 0:
@@ -232,16 +232,11 @@ if __name__=="__main__":
                 if visao_module.debug_frame is not None:
                     cv2.imshow("Debug Frame", visao_module.debug_frame)
                 print("AREA", maior_area)
-                # print("maior area")
             
                 cv2.waitKey(4)
-                # print("AQUI", centro[0], cx)
                 vel = Twist(Vector3(0.07, 0, 0), Vector3(0, 0, 0))
-                # print("super rapido")
                 velocidade_saida.publish(vel)
                 rospy.sleep(0.1)
-                # dist= rx-cx
-                # print (centro[0]) 
                 if centro is not None :
                     if maior_area == None or maior_area < 7000:
                         if (centro[0] < cx):
@@ -253,7 +248,7 @@ if __name__=="__main__":
                             # vel = Twist(Vector3(0.05, 0, 0), Vector3(0, 0, 0))
                             print('focou amarelo')
                         
-                    elif maior_area >= 7000 and maior_area < 130000:
+                    elif maior_area >= 7000 and maior_area < 122000:
                         print("entrou area")
                         if (centro[0] < bx):
                             vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.1))
@@ -263,23 +258,24 @@ if __name__=="__main__":
                             vel = Twist(Vector3(0,0,0), Vector3(0,0,0.1))
                             # vel = Twist(Vector3(0.05, 0, 0), Vector3(0, 0, 0))
                             print("focou creeper")
-                    elif maior_area >= 130000:
+                    elif maior_area >= 122000:
                         vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
-                        # raw_input("enter")
-                        # pegou_creeper=True
+                        velocidade_saida.publish(vel)
+                        raw_input("enter")
+                        pegou_creeper=True
                         vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.8))
                         velocidade_saida.publish(vel)
                         rospy.sleep(1.5)
-                        
                         print('focou creeper e PAROU')
-                    # print(reconheceu2)
-                    # print (pegou_creeper)
-                    # if reconheceu2 and pegou_creeper:
-                    #     print (pegou_creeper)
-                    #     print ("Reconheceu a base")
-                    #     vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
-                    #     velocidade_saida.publish(vel)
-                    #     raw_input("enter")  
+
+                    print("Se reconheceu creeper: ",reconheceu2)
+                    print ("Se pegou creeper (fora do if): ", pegou_creeper)
+                    if reconheceu2 and pegou_creeper:
+                        print ("Se pegou creeper: ", pegou_creeper)
+                        print ("Reconheceu a base")
+                        vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+                        velocidade_saida.publish(vel)
+                        raw_input("enter")  
 
                     velocidade_saida.publish(vel)
                     rospy.sleep(0.1)

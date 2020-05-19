@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # -*- coding:utf-8 -*-
-
+ 
 
 import rospy
 import numpy as np
@@ -14,7 +14,7 @@ from sensor_msgs.msg import Image, CompressedImage
 from cv_bridge import CvBridge, CvBridgeError
 import smach
 import smach_ros
-
+ 
  
 def identifica_cor(frame):
     '''

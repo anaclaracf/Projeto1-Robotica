@@ -3,7 +3,7 @@
 
 from __future__ import division, print_function
   
- 
+   
 import rospy
 import numpy as np
 import tf
@@ -14,10 +14,10 @@ from geometry_msgs.msg import Twist, Vector3, Pose
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Image, CompressedImage
 from cv_bridge import CvBridge, CvBridgeError
-import mobilenet_simples as mnet
+import mobilenet_simples as mnet 
 
 debug_frame = None
-  
+   
 def processa(frame,name):
     '''Use esta funcao para basea   r o processamento do seu robo'''
 
@@ -27,7 +27,7 @@ def processa(frame,name):
 
     reconheceu=False
     if len(result_tuples)>0:
-        if result_tuples[0][0]==name and result_tuples[0][1]>= 80.0: 
+        if result_tuples[0][0]==name and result_tuples[0][1]>= 60.0: 
             reconheceu=True
 
  

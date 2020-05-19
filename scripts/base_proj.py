@@ -8,7 +8,7 @@ import numpy
 import tf
 import math
 import cv2
-import time
+import time 
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Image, CompressedImage
 from cv_bridge import CvBridge, CvBridgeError
@@ -24,7 +24,7 @@ from std_msgs.msg import Header
  
 import visao_module
 
-
+ 
 bridge = CvBridge()
 bx=0
 cv_image = None
@@ -60,7 +60,7 @@ tf_buffer = tf2_ros.Buffer()
 
 # corr=str(input("Qual cor (pink, red, green)?"))
 
-
+ 
 def recebe(msg):
     # Para forçar maior atualização dos sistemas de coordenadas 
     # roslaunch turtlebot3_gazebo turtlebot3_gazebo_rviz.launch
@@ -72,7 +72,7 @@ def recebe(msg):
 		id = marker.id
 		marcador = "ar_marker_" + str(id)
 
-		print(tf_buffer.can_transform(frame, marcador, rospy.Time(0)))
+		#print(tf_buffer.can_transform(frame, marcador, rospy.Time(0)))
 		header = Header(frame_id=marcador)
 		# Procura a transformacao em sistema de coordenadas entre a base do robo e o marcador numero 100
 		# Note que para seu projeto 1 voce nao vai precisar de nada que tem abaixo, a 
@@ -137,8 +137,8 @@ def roda_todo_frame(imagem):
         dog = "dog"
         cat = "cat"
         bird = "bird"
-        centro, imagem, resultados, reconheceu =  visao_module.processa(cv_image,cat )
-        maior_area,bx = visao_module.identifica_cor(cv_image,red)
+        centro, imagem, resultados, reconheceu =  visao_module.processa(cv_image,dog )
+        maior_area,bx = visao_module.identifica_cor(cv_image,green)
 
         #qualquer, centro, maior_area, media =  visao_module.identifica_cor(cv_image)
 
@@ -232,13 +232,14 @@ if __name__=="__main__":
                 if visao_module.debug_frame is not None:
                     cv2.imshow("Debug Frame", visao_module.debug_frame)
                 print("AREA", maior_area)
+                print("ID",id)
             
                 cv2.waitKey(4)
-                vel = Twist(Vector3(0.07, 0, 0), Vector3(0, 0, 0))
+                vel = Twist(Vector3(0.095, 0, 0), Vector3(0, 0, 0))
                 velocidade_saida.publish(vel)
                 rospy.sleep(0.1)
                 if centro is not None :
-                    if maior_area == None or maior_area < 7000:
+                    if maior_area == None or maior_area < 7000: 
                         if (centro[0] < cx):
                             vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.1))
                             # vel = Twist(Vector3(0.05, 0, 0), Vector3(0, 0, 0))
@@ -248,7 +249,7 @@ if __name__=="__main__":
                             # vel = Twist(Vector3(0.05, 0, 0), Vector3(0, 0, 0))
                             print('focou amarelo')
                         
-                    elif maior_area >= 7000 and maior_area < 122000:
+                    elif maior_area >= 7000 and maior_area < 170000:
                         print("entrou area")
                         if (centro[0] < bx):
                             vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.1))
@@ -258,12 +259,12 @@ if __name__=="__main__":
                             vel = Twist(Vector3(0,0,0), Vector3(0,0,0.1))
                             # vel = Twist(Vector3(0.05, 0, 0), Vector3(0, 0, 0))
                             print("focou creeper")
-                    elif maior_area >= 122000:
+                    elif maior_area >= 170000 and not pegou_creeper:
                         vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
                         velocidade_saida.publish(vel)
                         raw_input("enter")
                         pegou_creeper=True
-                        vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.8))
+                        vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.4))
                         velocidade_saida.publish(vel)
                         rospy.sleep(1.5)
                         print('focou creeper e PAROU')
@@ -272,7 +273,7 @@ if __name__=="__main__":
                     print ("Se pegou creeper (fora do if): ", pegou_creeper)
                     if reconheceu2 and pegou_creeper:
                         print ("Se pegou creeper: ", pegou_creeper)
-                        print ("Reconheceu a base")
+                        print (" UHUUUUU Reconheceu a base")
                         vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
                         velocidade_saida.publish(vel)
                         raw_input("enter")  

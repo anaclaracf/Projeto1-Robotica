@@ -8,7 +8,7 @@ import numpy
 import tf
 import math
 import cv2
-import time 
+import time
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Image, CompressedImage
 from cv_bridge import CvBridge, CvBridgeError
@@ -137,8 +137,8 @@ def roda_todo_frame(imagem):
         dog = "dog"
         cat = "cat"
         bird = "bird"
-        centro, imagem, resultados, reconheceu =  visao_module.processa(cv_image,dog )
-        maior_area,bx = visao_module.identifica_cor(cv_image,green)
+        centro, imagem, resultados, reconheceu =  visao_module.processa(cv_image,bicycle)
+        maior_area,bx = visao_module.identifica_cor(cv_image,pink)
 
         #qualquer, centro, maior_area, media =  visao_module.identifica_cor(cv_image)
 
@@ -235,7 +235,7 @@ if __name__=="__main__":
                 print("ID",id)
             
                 cv2.waitKey(4)
-                vel = Twist(Vector3(0.095, 0, 0), Vector3(0, 0, 0))
+                vel = Twist(Vector3(0.07, 0, 0), Vector3(0, 0, 0))
                 velocidade_saida.publish(vel)
                 rospy.sleep(0.1)
                 if centro is not None :
@@ -264,16 +264,16 @@ if __name__=="__main__":
                         velocidade_saida.publish(vel)
                         raw_input("enter")
                         pegou_creeper=True
-                        vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.4))
+                        vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.6))
                         velocidade_saida.publish(vel)
                         rospy.sleep(1.5)
                         print('focou creeper e PAROU')
 
-                    print("Se reconheceu creeper: ",reconheceu2)
+                    print("Se reconheceu a base: ",reconheceu2)
                     print ("Se pegou creeper (fora do if): ", pegou_creeper)
                     if reconheceu2 and pegou_creeper:
                         print ("Se pegou creeper: ", pegou_creeper)
-                        print (" UHUUUUU Reconheceu a base")
+                        print (" UHUUU Reconheceu a base")
                         vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
                         velocidade_saida.publish(vel)
                         raw_input("enter")  

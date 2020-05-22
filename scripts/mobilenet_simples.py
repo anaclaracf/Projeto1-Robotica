@@ -79,7 +79,8 @@ def detect(frame):
             cv2.putText(image, label, (startX, y),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[idx], 2)
 
-            results.append((CLASSES[idx], confidence*100, (startX, startY),(endX, endY) ))
+            if CLASSES[idx] != "diningtable":
+                results.append((CLASSES[idx], confidence*100, (startX, startY),(endX, endY) ))
 
     # show the output image
     return image, results
